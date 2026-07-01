@@ -1,0 +1,4 @@
+(executable
+ (public_name raytracing)
+ (name main)
+ (libraries raytracing))
