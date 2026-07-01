@@ -17,7 +17,7 @@ let ray_colour (ray: Ray.ray) =
 
 let aspect_ratio = 16.0 /. 9.0
 
-let image_width = 800
+let image_width = 1920
 let image_height = int_of_float (float_of_int image_width /. aspect_ratio)
 
 let focal_length = 1.0

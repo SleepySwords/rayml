@@ -9,12 +9,12 @@ let at {origin; direction} t = origin +.. (t *.. direction)
 
 let hit_sphere (centre: vec3) radius ray =
     let oc = centre -.. ray.origin in
-    let a = dotproduct ray.direction ray.direction in
-    let b = -2.0 *. dotproduct (ray.direction) oc in
-    let c = dotproduct oc oc -. radius *. radius in
-    let disc = b *. b -. 4. *. a *. c in
+    let a = Vec3.length_sqrd ray.direction in
+    let h = dotproduct (ray.direction) oc in
+    let c = length_sqrd oc -. radius *. radius in
+    let disc = h *. h -. a *. c in
 
     if disc < 0.0 then
         -1.
     else
-        (-.b -. sqrt disc) /. (2. *. a)
+        (h -. sqrt disc) /. (a)
