@@ -14,4 +14,7 @@ let hit_sphere (centre: vec3) radius ray =
     let c = dotproduct oc oc -. radius *. radius in
     let disc = b *. b -. 4. *. a *. c in
 
-    disc >= 0.
+    if disc < 0.0 then
+        -1.
+    else
+        (-.b -. sqrt disc) /. (2. *. a)

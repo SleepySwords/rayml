@@ -5,8 +5,10 @@ let ( /.. ) = Vec3.( /.. )
 
 let ray_colour (ray: Ray.ray) =
     let open Vec3 in
-    if Ray.hit_sphere (Vec3.make 0.0 0.0 (-.1.0)) 0.5 ray then
-        Vec3.make 1.0 0.0 0.0
+    let t = Ray.hit_sphere (Vec3.make 0.0 0.0 (-.1.0)) 0.5 ray in
+    if t > 0.0 then
+        let n = unit_vector (Ray.at ray t -.. Vec3.make 0.0 0.0 (-.1.0)) in
+        0.5 *.. Vec3.make (n.x +. 1.) (n.y +. 1.) (n.z +. 1.)
     else
         let { y } = Vec3.unit_vector ray.direction in
         let a = 0.5 *. (y +. 1.0) in
@@ -15,7 +17,7 @@ let ray_colour (ray: Ray.ray) =
 
 let aspect_ratio = 16.0 /. 9.0
 
-let image_width = 400
+let image_width = 800
 let image_height = int_of_float (float_of_int image_width /. aspect_ratio)
 
 let focal_length = 1.0
@@ -38,9 +40,8 @@ let output_sample _ =
     let pixel00_loc = viewport_upper_left +.. 0.5 *.. (pixel_delta_u +.. pixel_delta_v) in
 
     output_metadata ();
-    try
-        for j = 0 to (image_height - 1) do
-            Printf.eprintf "\rScanlines remaining: %d " (image_height - j);
+    for j = 0 to (image_height - 1) do
+        Printf.eprintf "\rScanlines remaining: %d %!" (image_height - j);
         for i = 0 to (image_width - 1) do
             let pixel_centre = pixel00_loc +.. (float_of_int i *.. pixel_delta_u) +.. (float_of_int j *.. pixel_delta_v) in
 
@@ -48,11 +49,9 @@ let output_sample _ =
             let ray: Ray.ray = {direction = ray_direction; origin = camera_centre} in
             let pixel_colour = ray_colour ray in
 
-            (* if true then raise Exit; *)
             Vec3.output_colour stdout pixel_colour ()
         done
-        done;
-    with Exit -> ();
+    done;
     Printf.eprintf "\rDone                                    \n"
 
 let () = output_sample ()
