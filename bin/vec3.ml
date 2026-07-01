@@ -6,15 +6,15 @@ type vec3 = {
 
 let zero = { x = 0.0; y = 0.0; z = 0.0 }
 
-let ( +| ) ({x = x1; y = y1;z = z1}: vec3) ({x = x2; y = y2; z = z2}: vec3) = { x = x1 +. x2; y = y1 +. y2; z = z1 +. z2;}
+let ( +.. ) ({x = x1; y = y1 ;z = z1}: vec3) ({x = x2; y = y2; z = z2}: vec3) = { x = x1 +. x2; y = y1 +. y2; z = z1 +. z2;}
 
 let neg ({x; y; z}: vec3) = { x = -.x; y = -.y; z = -.z;}
 
-let ( -| ) v1 v2 = v1 +| (neg v2)
+let ( -.. ) v1 v2 = v1 +.. (neg v2)
 
-let ( *| ) t ({x; y; z}: vec3) = { x = x *. t; y = y *. t; z = z *. t;}
+let ( *.. ) t ({x; y; z}: vec3) = { x = x *. t; y = y *. t; z = z *. t;}
 
-let ( /| ) v t =  (1./.t) *| v
+let ( /.. ) v t =  (1./.t) *.. v
 
 let length_sqrd v = v.x *. v.x +. v.y *. v.y +. v.z *. v.z
 
@@ -23,9 +23,9 @@ let length v = sqrt @@ length_sqrd v
 
 let make x y z = {x; y; z}
 
-let unit_vector v = v /| (length v)
+let unit_vector v = v /.. (length v)
 
-let dotproduct v1 v2 = v1.x *. v2.x +. v1.y *. v2.y +. v1.z +. v2.z
+let dotproduct v1 v2 = v1.x *. v2.x +. v1.y *. v2.y +. v1.z *. v2.z
 
 let crossproduct v1 v2 = {
     x = v1.y *. v2.z -. v1.z *. v2.y;
