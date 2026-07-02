@@ -6,8 +6,8 @@ type generic_hittable =
 module GenericHittable : Hit.Hittable with type t = generic_hittable = struct
     type t = generic_hittable
 
-    let hit h r tmin tmax = match h with
-    | GenSphere sph -> Sphere.hit sph r tmin tmax
+    let hit h r interval = match h with
+    | GenSphere sph -> Sphere.hit sph r interval
 end
 
 let mkSphereGen sph = GenSphere sph
@@ -15,18 +15,12 @@ let mkSphereGen sph = GenSphere sph
 module GenericHittableList : Hit.Hittable with type t = GenericHittable.t list = struct
     type t = GenericHittable.t list
 
-    let hit list ray tmin tmax =
-        let hit = ref None in
-        let closest = ref tmax in
-        List.iter (fun gh  ->
-            match (GenericHittable.hit gh ray tmin !closest) with
-            | Some rc -> if !closest > rc.t then (
-                hit := Some rc;
-                closest := rc.t;
-            )
-            | None -> ()
-        ) list;
-        !hit
+    let hit list ray Interval.({min_i = tmin; max_i = tmax }) =
+        List.fold_left (fun (hit, closest) gh ->
+            match (GenericHittable.hit gh ray Interval.({min_i = tmin; max_i = closest})) with
+            | Some rc when closest > rc.t -> (Some rc, rc.t)
+            | _ -> (hit, closest)
+        ) (None, tmax) list |> fst
 end
 
 module type StorableHittable = sig
@@ -49,16 +43,10 @@ end)
 module ModuleHittableList : Hit.Hittable with type t = (module StorableHittable) list = struct
     type t = (module StorableHittable) list
 
-    let hit list ray tmin tmax =
-        let hit = ref None in
-        let closest = ref tmax in
-        List.iter (fun md  ->
-            match (hit_module md ray tmin !closest) with
-            | Some rc -> if !closest > rc.t then (
-                hit := Some rc;
-                closest := rc.t;
-            )
-            | None -> ()
-        ) list;
-        !hit
+    let hit lst ray Interval.({min_i = tmin; max_i = tmax }) =
+        List.fold_left (fun (hit, closest) md ->
+            match (hit_module md ray Interval.({min_i = tmin; max_i = closest})) with
+            | Some rc when closest > rc.t -> (Some rc, rc.t)
+            | _ -> (hit, closest)
+        ) (None, tmax) lst |> fst
 end

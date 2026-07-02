@@ -10,7 +10,7 @@ type sphere = {
 module Sphere : Hittable with type t = sphere = struct
     type t = sphere
 
-    let hit { centre; radius; } ray tmin tmax = 
+    let hit { centre; radius; } ray Interval.({min_i = tmin; max_i = tmax}) = 
         let oc = centre -.. ray.origin in
         let a = Vec3.length_sqrd ray.direction in
         let h = dotproduct (ray.direction) oc in

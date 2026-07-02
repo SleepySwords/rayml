@@ -13,5 +13,5 @@ let face_normal ray outward_normal =
 module type Hittable = sig
     type t
 
-    val hit : t -> Ray.ray -> float -> float -> hit_record option
+    val hit : t -> Ray.ray -> Interval.interval -> hit_record option
 end

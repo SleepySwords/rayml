@@ -35,9 +35,14 @@ let crossproduct v1 v2 = {
 
 let output stream v () = Printf.fprintf stream "%f %f %f" v.x v.y v.z
 
+let pixel_interval = Interval.({min_i = 0.0; max_i = 0.999})
+
 let output_colour stream v () = [v.x; v.y; v.z;]
+    |> List.map (Interval.clamp pixel_interval)
     |> List.map (fun x -> x *. 255.999 )
     |> List.map int_of_float
     |> List.map string_of_int
     |> String.concat " "
     |> Printf.fprintf stream "%s\n"
+
+let sample_square () = make (Random.float 1.0 -. 0.5) (Random.float 1.0 -. 0.5) 0.0
