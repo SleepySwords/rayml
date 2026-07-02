@@ -1,4 +1,4 @@
 (executable
- (public_name raytracing)
+ (public_name rayml)
  (name main)
  (libraries raytracing))

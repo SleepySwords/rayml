@@ -1,18 +1,26 @@
+open Sphere
+open World
+
 let ( +.. ) = Vec3.( +.. )
 let ( -.. ) = Vec3.( -.. )
 let ( *.. ) = Vec3.( *.. )
 let ( /.. ) = Vec3.( /.. )
 
+let world = [
+    mkSphere {centre = Vec3.make 0.0 0.0 (-.1.0); radius = 0.5};
+    mkSphere {centre = Vec3.make 0.0 (-.100.5) (-.1.0); radius = 100.0};
+]
+
 let ray_colour (ray: Ray.ray) =
     let open Vec3 in
-    let t = Ray.hit_sphere (Vec3.make 0.0 0.0 (-.1.0)) 0.5 ray in
-    if t > 0.0 then
-        let n = unit_vector (Ray.at ray t -.. Vec3.make 0.0 0.0 (-.1.0)) in
-        0.5 *.. Vec3.make (n.x +. 1.) (n.y +. 1.) (n.z +. 1.)
-    else
+    let rc = HittableList.hit world ray 0. infinity in
+    match rc with
+    | Some r -> 0.5 *.. (r.normal +.. Vec3.make 1.0 1.0 1.0)
+    | None -> (
         let { y } = Vec3.unit_vector ray.direction in
         let a = 0.5 *. (y +. 1.0) in
         ((1.0 -. a) *.. Vec3.make 1.0 1.0 1.0) +.. a *.. Vec3.make 0.5 0.7 1.0
+    )
 
 
 let aspect_ratio = 16.0 /. 9.0
