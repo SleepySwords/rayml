@@ -7,13 +7,13 @@ let ( *.. ) = Vec3.( *.. )
 let ( /.. ) = Vec3.( /.. )
 
 let world = [
-    mkSphere {centre = Vec3.make 0.0 0.0 (-.1.0); radius = 0.5};
-    mkSphere {centre = Vec3.make 0.0 (-.100.5) (-.1.0); radius = 100.0};
+    mkSphereMod {centre = Vec3.make 0.0 0.0 (-.1.0); radius = 0.5};
+    mkSphereMod {centre = Vec3.make 0.0 (-.100.5) (-.1.0); radius = 100.0};
 ]
 
 let ray_colour (ray: Ray.ray) =
     let open Vec3 in
-    let rc = HittableList.hit world ray 0. infinity in
+    let rc = ModuleHittableList.hit world ray 0. infinity in
     match rc with
     | Some r -> 0.5 *.. (r.normal +.. Vec3.make 1.0 1.0 1.0)
     | None -> (
