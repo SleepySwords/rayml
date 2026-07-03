@@ -1,3 +1,4 @@
+(* might convert this into an array rather than a record*)
 type vec3 = {
     x : float;
     y : float;
@@ -37,7 +38,10 @@ let output stream v () = Printf.fprintf stream "%f %f %f" v.x v.y v.z
 
 let pixel_interval = Interval.({min_i = 0.0; max_i = 0.999})
 
+let linear_to_gamma component = sqrt @@ max component 0.
+
 let output_colour stream v () = [v.x; v.y; v.z;]
+    |> List.map linear_to_gamma
     |> List.map (Interval.clamp pixel_interval)
     |> List.map (fun x -> x *. 255.999 )
     |> List.map int_of_float
@@ -46,3 +50,24 @@ let output_colour stream v () = [v.x; v.y; v.z;]
     |> Printf.fprintf stream "%s\n"
 
 let sample_square () = make (Random.float 1.0 -. 0.5) (Random.float 1.0 -. 0.5) 0.0
+
+let random_vec () = make (Random.float 1.0) (Random.float 1.0) (Random.float 1.0)
+
+let random_float_range min max = (Random.float (max -. min)) +. min
+
+let random_vec_range min max = make (random_float_range min max) (random_float_range min max) (random_float_range min max)
+
+let random_unit_vec () = 
+    let p = ref (random_vec_range (-.1.) 1.) in
+    while 1e-160 >= length_sqrd !p || length_sqrd !p > 1. do
+        p := random_vec_range (-.1.) 1.
+    done;
+    !p
+
+let random_on_hemisphere normal =
+    let on_unit_sphere = random_unit_vec () in
+    if (dotproduct on_unit_sphere normal) > 0.0 then on_unit_sphere else neg on_unit_sphere
+
+let small_value = 1e-8
+let near_zero v =
+    (abs_float v.x) < small_value && (abs_float v.y) < small_value && (abs_float v.z) < small_value
