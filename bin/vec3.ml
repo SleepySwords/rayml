@@ -21,6 +21,8 @@ let length_sqrd v = v.x *. v.x +. v.y *. v.y +. v.z *. v.z
 
 let length v = sqrt @@ length_sqrd v
 
+let multiply_vec v1 v2 = {x = v1.x *. v2.x; y = v1.y *. v2.y; z = v1.z *. v2.z}
+
 
 let make x y z = {x; y; z}
 
@@ -71,3 +73,6 @@ let random_on_hemisphere normal =
 let small_value = 1e-8
 let near_zero v =
     (abs_float v.x) < small_value && (abs_float v.y) < small_value && (abs_float v.z) < small_value
+
+let reflect v n =
+    v -.. (2. *. dotproduct v n) *.. n

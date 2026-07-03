@@ -30,9 +30,10 @@ let rec ray_colour ray depth world =
     else
         let rc = ModuleHittableList.hit world ray Interval.({min_i = 0.001; max_i = infinity}) in
         match rc with
-        | Some r -> 
-                let direction = Vec3.random_unit_vec () +.. r.normal in
-                0.5 *.. ray_colour Ray.{origin = r.point; direction} (depth - 1) world
+        | Some {mat; point; normal} -> 
+            (match mat ray point normal with
+            | Some (attenuation, scattered) -> Vec3.multiply_vec attenuation (ray_colour scattered (depth - 1) world)
+            | _ -> Vec3.zero)
         | None -> (
             let { y } = Vec3.unit_vector ray.direction in
             let a = 0.5 *. (y +. 1.0) in
