@@ -11,6 +11,7 @@ let face_normal ray outward_normal =
     (front_face, if front_face then outward_normal else Vec3.neg outward_normal)
 
 
+(* It might be better to replace this with a function, we can do partial application in that scenario*)
 module type Hittable = sig
     type t
 

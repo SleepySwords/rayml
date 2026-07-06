@@ -76,3 +76,9 @@ let near_zero v =
 
 let reflect v n =
     v -.. (2. *. dotproduct v n) *.. n
+
+let refract uv n etai_over_etat =
+    let cos_theta = min (dotproduct (neg uv) n) 1. in
+    let r_out_perp = etai_over_etat *.. (uv +.. (cos_theta *.. n)) in
+    let r_out_parallel = -. sqrt (abs_float (1.0 -. length_sqrd r_out_perp)) *.. n in
+    r_out_perp +.. r_out_parallel

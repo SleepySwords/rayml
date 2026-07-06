@@ -28,10 +28,10 @@ let rec ray_colour ray depth world =
     if depth <= 0 then
         Vec3.make 0. 0. 0.
     else
-        let rc = ModuleHittableList.hit world ray Interval.({min_i = 0.001; max_i = infinity}) in
+        let rc = GenericHittableList.hit world ray Interval.({min_i = 0.001; max_i = infinity}) in
         match rc with
-        | Some {mat; point; normal} -> 
-            (match mat ray point normal with
+        | Some {mat; point; normal; front_face} -> 
+            (match mat ray point normal front_face with
             | Some (attenuation, scattered) -> Vec3.multiply_vec attenuation (ray_colour scattered (depth - 1) world)
             | _ -> Vec3.zero)
         | None -> (
@@ -40,14 +40,18 @@ let rec ray_colour ray depth world =
             ((1.0 -. a) *.. Vec3.make 1.0 1.0 1.0) +.. a *.. Vec3.make 0.5 0.7 1.0
         )
 
+let degrees_to_radians deg = deg *. Float.pi /. 180.
 
-let make image_width aspect_ratio samples_per_pixel =
+
+let make ?(max_depth=10) ?(vfov=90.) ?(samples_per_pixel=10) image_width aspect_ratio =
     let camera_centre = Vec3.make 0.0 0.0 0.0 in
 
     let image_height = int_of_float (float_of_int image_width /. aspect_ratio) in
 
     let focal_length = 1.0 in
-    let viewport_height = 2.0 in
+    let theta = degrees_to_radians vfov in
+    let h = tan (theta /. 2.) in
+    let viewport_height = 2. *. h *. focal_length in
     let viewport_width = viewport_height *. (float_of_int image_width /. float_of_int image_height) in
 
     let viewpoint_u = Vec3.make (viewport_width) 0.0 0.0 in
@@ -59,7 +63,7 @@ let make image_width aspect_ratio samples_per_pixel =
     let viewport_upper_left = camera_centre -.. (Vec3.make 0.0 0.0 focal_length) -.. (viewpoint_u /.. 2.) -.. (viewpoint_v /.. 2.) in
     let pixel00_loc = viewport_upper_left +.. 0.5 *.. (pixel_delta_u +.. pixel_delta_v) in
 
-    { aspect_ratio; image_width; image_height; centre = Vec3.make 0.0 0.0 0.0; pixel00_loc; pixel_delta_u; pixel_delta_v; samples_per_pixel; max_depth = 10}
+    { aspect_ratio; image_width; image_height; centre = Vec3.make 0.0 0.0 0.0; pixel00_loc; pixel_delta_u; pixel_delta_v; samples_per_pixel; max_depth; }
 
 let get_ray {pixel00_loc; pixel_delta_u; pixel_delta_v; centre} i j = 
     let offset = Vec3.sample_square () in
