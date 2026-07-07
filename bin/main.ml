@@ -76,9 +76,9 @@ let aspect_ratio = 16.0 /. 9.0
 let image_width = 600
 
 let camera =
-  Camera.make ~samples_per_pixel:10 ~vfov:20. ~max_depth:10
-    ~look_from:(Vec3.make (-2.) 2. 1.) ~look_at:(Vec3.make 0. 0. (-1.))
-    ~defocus_angle:10. ~focus_dist:3.4 image_width aspect_ratio
+  Camera.make ~samples_per_pixel:500 ~vfov:20. ~max_depth:50
+    ~look_from:(Vec3.make 13. 2. 3.) ~look_at:(Vec3.make 0. 0. (0.))
+    ~defocus_angle:0.6 ~focus_dist:10. image_width aspect_ratio
 
 let () =
   Random.self_init ();
