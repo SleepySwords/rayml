@@ -24,7 +24,7 @@ let dotproduct v1 v2 = (v1.x *. v2.x) +. (v1.y *. v2.y) +. (v1.z *. v2.z)
 let crossproduct v1 v2 =
   {
     x = (v1.y *. v2.z) -. (v1.z *. v2.y);
-    y = (v1.x *. v2.z) -. (v1.z *. v2.x);
+    y = -.((v1.x *. v2.z) -. (v1.z *. v2.x));
     z = (v1.x *. v2.y) -. (v1.y *. v2.x);
   }
 
@@ -45,7 +45,7 @@ let sample_square () =
 let random_vec () =
   make (Random.float 1.0) (Random.float 1.0) (Random.float 1.0)
 
-let random_float_range min max = Random.float (max -. min) +. min
+let random_float_range min max = (Random.float (max -. min)) +. min
 
 let random_vec_range min max =
   make
@@ -57,6 +57,15 @@ let random_unit_vec () =
   let p = ref (random_vec_range (-1.) 1.) in
   while 1e-160 >= length_sqrd !p || length_sqrd !p > 1. do
     p := random_vec_range (-1.) 1.
+  done;
+  !p
+
+let random_in_unit_disc () =
+  let p =
+    ref @@ make (random_float_range (-1.) 1.) (random_float_range (-1.) 1.) 0.
+  in
+  while length_sqrd !p >= 1. do
+    p := make (random_float_range (-1.) 1.) (random_float_range (-1.) 1.) 0.
   done;
   !p
 
