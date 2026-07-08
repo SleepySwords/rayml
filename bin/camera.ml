@@ -27,18 +27,18 @@ type counter = { mutable c : int }
 
 let count = { c = 0 }
 
-let rec ray_colour ray depth world =
+let rec ray_colour ray depth ((objectList, materials) as world) =
   let open Vec3 in
   count.c <- count.c + 1;
   if depth <= 0 then Vec3.make 0. 0. 0.
   else
     let rc =
-      GenericHittableList.hit world ray
+      GenericHittableList.hit objectList ray
         Interval.{ min_i = 0.001; max_i = infinity }
     in
     match rc with
     | Some { mat; point; normal; front_face } -> (
-        match mat ray point normal front_face with
+        match materials.(mat) ray point normal front_face with
         | Some (attenuation, scattered) ->
             Vec3.multiply_vec attenuation
               (ray_colour scattered (depth - 1) world)

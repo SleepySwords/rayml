@@ -2,7 +2,7 @@ type hit_record = {
   point : Vec3.vec3;
   normal : Vec3.vec3;
   t : float;
-  mat : Material.material_scatter;
+  mat : int;
   front_face : bool;
 }
 

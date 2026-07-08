@@ -5,7 +5,7 @@ open Ray
 type sphere = {
   centre : Vec3.vec3;
   radius : float;
-  mat : Material.material_scatter;
+  mat : int;
 }
 
 module Sphere : Hittable with type t = sphere = struct
