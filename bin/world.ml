@@ -27,6 +27,22 @@ struct
     |> fst
 end
 
+module GenericHittableArray : Hit.Hittable with type t = GenericHittable.t array =
+struct
+  type t = GenericHittable.t array
+
+  let hit list ray Interval.{ min_i = tmin; max_i = tmax } =
+    Array.fold_left
+      (fun (hit, closest) gh ->
+        match
+          GenericHittable.hit gh ray Interval.{ min_i = tmin; max_i = closest }
+        with
+        | Some rc when closest > rc.t -> (Some rc, rc.t)
+        | _ -> (hit, closest))
+      (None, tmax) list
+    |> fst
+end
+
 module type StorableHittable = sig
   type t
 

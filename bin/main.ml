@@ -71,7 +71,7 @@ let () =
   Random.self_init ();
   prerr_endline "";
   let start_time = Sys.time () in
-  Camera.render (world, materials) camera;
+  Camera.render (Array.of_list world, materials) camera;
   let stop_time = Sys.time () in
   Printf.eprintf "Computed %d rays in %fs, (%f million rays/s)\n"
     Camera.(total_rays ())

@@ -33,7 +33,7 @@ let rec ray_colour ray depth ((objectList, materials) as world) =
   if depth <= 0 then Vec3.make 0. 0. 0.
   else
     let rc =
-      GenericHittableList.hit objectList ray
+      GenericHittableArray.hit objectList ray
         Interval.{ min_i = 0.001; max_i = infinity }
     in
     match rc with
