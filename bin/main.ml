@@ -6,9 +6,7 @@ let ( +.. ) = Vec3.( +.. )
 let ( -.. ) = Vec3.( -.. )
 let ( *.. ) = Vec3.( *.. )
 let ( /.. ) = Vec3.( /.. )
-
 let material_ground = lambertian_scatter ~albedo:(Vec3.make 0.5 0.5 0.5)
-
 let material1 = dialetic_scatter ~refraction_index:1.5
 let material2 = lambertian_scatter ~albedo:(Vec3.make 0.4 0.2 0.1)
 let material3 = metal_scatter ~albedo:(Vec3.make 0.7 0.6 0.5) ~fuzz:0.
@@ -21,24 +19,10 @@ let world =
         radius = 1000.0;
         mat = material_ground;
       };
+    mkSphereGen { centre = Vec3.make 0.0 1. 0.0; radius = 1.0; mat = material1 };
     mkSphereGen
-      {
-        centre = Vec3.make 0.0 1. 0.0;
-        radius = 1.0;
-        mat = material1;
-      };
-    mkSphereGen
-      {
-        centre = Vec3.make (-.4.) 1. 0.;
-        radius = 1.0;
-        mat = material2;
-      };
-    mkSphereGen
-      {
-        centre = Vec3.make 4. 1. 0.;
-        radius = 1.0;
-        mat = material3;
-      };
+      { centre = Vec3.make (-4.) 1. 0.; radius = 1.0; mat = material2 };
+    mkSphereGen { centre = Vec3.make 4. 1. 0.; radius = 1.0; mat = material3 };
   ]
 
 let world =
@@ -73,13 +57,20 @@ let world =
         })
 
 let aspect_ratio = 16.0 /. 9.0
-let image_width = 600
+let image_width = 100
 
 let camera =
   Camera.make ~samples_per_pixel:500 ~vfov:20. ~max_depth:50
-    ~look_from:(Vec3.make 13. 2. 3.) ~look_at:(Vec3.make 0. 0. (0.))
+    ~look_from:(Vec3.make 13. 2. 3.) ~look_at:(Vec3.make 0. 0. 0.)
     ~defocus_angle:0.6 ~focus_dist:10. image_width aspect_ratio
 
 let () =
   Random.self_init ();
-  Camera.render world camera
+  prerr_endline "";
+  let start_time = Sys.time () in
+  Camera.render world camera;
+  let stop_time = Sys.time () in
+  Printf.eprintf "Computed %d rays in %fs, (%f million rays/s)\n"
+    Camera.(total_rays ())
+    (stop_time -. start_time)
+    ((float_of_int Camera.(total_rays ()) /. (stop_time -. start_time)) /. 1e6)

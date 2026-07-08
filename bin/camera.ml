@@ -23,8 +23,13 @@ let output_metadata { image_width; image_height } _ =
 
 let output_pixel r g b _ = Printf.printf "%d %d %d\n" r g b
 
+type counter = { mutable c : int }
+
+let count = { c = 0 }
+
 let rec ray_colour ray depth world =
   let open Vec3 in
+  count.c <- count.c + 1;
   if depth <= 0 then Vec3.make 0. 0. 0.
   else
     let rc =
@@ -114,7 +119,9 @@ let get_ray
     +.. ((float_of_int j +. offset.y) *.. pixel_delta_v)
   in
 
-  let ray_origin = if defocus_angle <= 0. then centre else defocus_disk_sample camera in
+  let ray_origin =
+    if defocus_angle <= 0. then centre else defocus_disk_sample camera
+  in
   let ray_direction = pixel_centre -.. ray_origin in
   Ray.{ direction = ray_direction; origin = ray_origin }
 
@@ -144,3 +151,5 @@ let render world
     done
   done;
   Printf.eprintf "\rDone                                    \n"
+
+let total_rays () = count.c
